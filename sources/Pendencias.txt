@@ -1,0 +1,102 @@
+﻿os enumerocos com deslocamento de bits estão saindo asssim:
+	  TNodeFlags = (
+		  None = 0,
+		  Let = 1 << 0,
+		  &Const = 1 << 1,
+		  NestedNamespace = 1 << 2,
+		  Synthesized = 1 << 3,
+		  Namespace = 1 << 4,
+		  ExportContext = 1 << 5,
+		  ContainsThis = 1 << 6,
+		  HasImplicitReturn = 1 << 7,
+		  HasExplicitReturn = 1 << 8,
+		  GlobalAugmentation = 1 << 9,
+		  HasAsyncFunctions = 1 << 10,
+		  DisallowInContext = 1 << 11,
+		  YieldContext = 1 << 12,
+		  DecoratorContext = 1 << 13,
+		  AwaitContext = 1 << 14,
+
+
+
+gera primeiro todas as interfaces para somente depois as classes
+verificar declaracao duplica dos metodos das classes filhas na classe pai
+
+
+abaixo ficou um T perdido, verificar
+
+ IHighlightingStrategy = interface
+    ['{D0948784-AABF-4D20-8A9F-E3614D7E2A61}']
+    function GetProperties(): TDictionary<String, T string>;
+    property Properties: TDictionary<String, T string> read GetProperties;
+
+
+
+generics dentro de generics
+           TDefaultHighlightingStrategy
+		   
+		   ficou assim
+		       private function GetEnvironmentColors(): IEnumerable<System.Collections.Generic.TKeyValuePair>;
+			   public property EnvironmentColors: IEnumerable<TKeyValuePair> read GetEnvironmentColors;
+			   
+		   o original era assim
+				 public IEnumerable<KeyValuePair<string, THighlightColor>> EnvironmentColors {
+					get {
+						return m_environmentColors;
+					}
+				 }
+		
+		
+trocar virtual; overload;		
+por overload; virtual;
+
+tirar (EException) para ficar somente (Exception)
+
+
+
+na declaracao da classe mudar final para sealed
+
+
+nomes de metodos com palavras reservadas
+	TSpan
+		public property Begin: TArray<Char> read GetBegin;
+		private function GetEnd(): TArray<Char>;
+		public property End: TArray<Char> read GetEnd;
+
+
+a classe com generics não foi
+		chegou assim
+			TWeakCollection = class(IEnumerable<T>)
+			
+		e o original era assim
+			public class TWeakCollection<T> : IEnumerable<T> where T : class
+		
+	  
+
+
+
+
+struct dentro de classe
+	sealed class TLineSegmentTree : IList<TLineSegment>
+		{
+			internal struct TRBNode
+			{
+
+
+
+GOTO não esta certo
+mudar o typecast tirar e Variavel as Tipo para Tipo(Variavel)
+
+o comando CASE  esta gerando saida o break isso pode fazer sair de um loop externo ao case.
+
+adicionar suporte a:
+        variavel++
+        ++variavel
+        variavel += X;
+        variavel -= X
+        variavel *= X;
+        variavel &= X
+
+
+esta chamando base . em vez de inherited
+ base.BeginMethod(sub_id, k, ml, res_type_id);
