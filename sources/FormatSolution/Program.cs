@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Build.Locator;
+﻿using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Rename;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 
 static class Program
 {
@@ -154,39 +155,29 @@ static class Program
 
     static async Task Main(string[] args)
     {
-        MSBuildLocator.RegisterDefaults();
+        // 1. Localizar e registrar o MSBuild
+        // Isso é necessário para carregar soluções ou projetos usando o Workspace.MSBuild
+        if (!MSBuildLocator.IsRegistered)
+        {
+            MSBuildLocator.RegisterDefaults();
+        }
 
-        MSBuildWorkspace workspace = MSBuildWorkspace.Create();
-
-        //Solution originalSolution = await workspace.OpenSolutionAsync(@"T:\estudando\roslyn-sdk\Se7e.Data-v2\Se7e.Data.sln");
-        var solutionFileName = args.FirstOrDefault();
-        //solutionFileName = @"T:\DoslynDsv\master\PascalStudio\src\CSharpToObjectPascal\Conversoes\TypeScriptAST\TypeScriptAST.sln";
-        //solutionFileName = @"T:\DynamicNav2009Dsv\SourceILSpyRenomeado\Solution.sln";
-        //solutionFileName = @"T:\DynamicsNavDsv\SourcesRenomeados2\Microsoft.Dynamics.Nav.sln";
-        //solutionFileName = @"T:\DynamicNav2009Dsv\WinForms2\System.Windows.Forms.sln";
-        //solutionFileName = @"T:\DoslynDsv\master\PascalStudio\src\CSharpToObjectPascal\Conversoes\PaxScript.NET\PaxScriptNet.sln";
-        //solutionFileName = @"T:\dotnet\winforms-6.0.0-rc.2.21480.6\Winforms.sln";
-        //solutionFileName = @"T:\DynamicNav2009Dsv\System.Drawing2\System.Drawing.sln";
-        //solutionFileName = @"T:\dotnet\.NET 4.8 for Windows January 2020 - Conversao\Source\ndp\fx\src\System.Windows.Forms.sln";
-        //solutionFileName = @"T:\DynamicNav2009Dsv\Framework.NET-2.0-src\Framework.NET-2.0.sln";
-        //solutionFileName = @"T:\DynamicNav2009Dsv\Framework.NET-2.0-src\Microsoft\Web\Management\Microsoft.Web.Management.sln";
-
-        //solutionFileName = @"X:\GoldERP-Dsv\v1.14\PlataformaDsv\src\v1.14-All.sln";
-        solutionFileName = @"X:\WinFormsDsv\renomeados\WinForms - Meu WinDraw - Renomeados.sln";
+        var workspace = Microsoft.CodeAnalysis.MSBuild.MSBuildWorkspace.Create();
+        var solutionFileName = @"T:\\temp\\MeusProjetos\\ProjetoOriginal\\TesteFilterConsoleAppNovo.sln";
         Directory.SetCurrentDirectory(Path.GetDirectoryName(solutionFileName));
+        var solution = await workspace.OpenSolutionAsync(solutionFileName);
+        Console.WriteLine("Solução carregada. Iniciando renomeação de classes...");
 
         int qtdeRenomeados = 0;
 
         Console.Title = solutionFileName;
 
-        //Solution newSolution = originalSolution;
-        Solution newSolution = await workspace.OpenSolutionAsync(solutionFileName);
         bool achouAlgum = true;
         while (achouAlgum)
         {
             achouAlgum = false;
 
-            foreach (Project project in newSolution.Projects)
+            foreach (Project project in solution.Projects)
             {
                 Compilation compilation = await project.GetCompilationAsync();
 
@@ -214,10 +205,9 @@ static class Program
                             Console.WriteLine("Renomeando Class" + className + " em: " + currentFileName);
 
                             ISymbol originalSymbol = semantic.GetDeclaredSymbol(classDeclarationSyntax);
-                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                            Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-
-                            newSolution = tempSolution;
+                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                            var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                            solution = newSolution;
                             achouAlgum = true;
                             break;
                         }
@@ -237,10 +227,9 @@ static class Program
                             Console.WriteLine("Renomeando Delegate" + delegateName + " em: " + currentFileName);
 
                             ISymbol originalSymbol = semantic.GetDeclaredSymbol(delegateDeclarationSyntax);
-                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                            Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-                            newSolution = tempSolution;
-
+                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                            var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                            solution = newSolution;
                             achouAlgum = true;
                             break;
                         }
@@ -260,10 +249,9 @@ static class Program
                             Console.WriteLine("Renomeando Enum: " + enumName + " em: " + currentFileName);
 
                             ISymbol originalSymbol = semantic.GetDeclaredSymbol(enumDeclarationSyntax);
-                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                            Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-                            newSolution = tempSolution;
-
+                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                            var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                            solution = newSolution;
                             achouAlgum = true;
                             break;
                         }
@@ -290,10 +278,9 @@ static class Program
                             Console.WriteLine("Renomeando Struct: " + structName + " em: " + currentFileName);
 
                             ISymbol originalSymbol = semantic.GetDeclaredSymbol(structDeclarationSyntax);
-                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                            Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-                            newSolution = tempSolution;
-
+                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                            var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                            solution = newSolution;
                             achouAlgum = true;
                             break;
                         }
@@ -315,10 +302,9 @@ static class Program
                                 Console.WriteLine("Renomeando Field: " + variableDeclaratorSyntax.Identifier.ValueText + " em: " + currentFileName);
 
                                 ISymbol originalSymbol = semantic.GetDeclaredSymbol(variableDeclaratorSyntax);
-                                SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                                Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-                                newSolution = tempSolution;
-
+                                SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                                var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                                solution = newSolution;
                                 achouAlgum = true;
                                 break;
                             }
@@ -342,10 +328,9 @@ static class Program
                             Console.WriteLine("Renomeando Parametro: " + parameterDeclarationSyntax.Identifier.ValueText + " em: " + currentFileName);
 
                             ISymbol originalSymbol = semantic.GetDeclaredSymbol(parameterDeclarationSyntax);
-                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                            Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-                            newSolution = tempSolution;
-
+                            SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                            var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                            solution = newSolution;
                             achouAlgum = true;
                             break;
                         }
@@ -370,11 +355,9 @@ static class Program
                                 Console.WriteLine("Renomeando Variavel Local: " + variableDeclaratorSyntax.Identifier.ValueText + " em: " + currentFileName);
 
                                 ISymbol originalSymbol = semantic.GetDeclaredSymbol(variableDeclaratorSyntax);
-                                SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, true);
-                                Solution tempSolution = await Renamer.RenameSymbolAsync(project.Solution, originalSymbol, symbolRenameOptions, newName);
-                                newSolution = tempSolution;
-                                
-
+                                SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
+                                var newSolution = await Renamer.RenameSymbolAsync(solution, originalSymbol, symbolRenameOptions, newName);
+                                solution = newSolution;
                                 achouAlgum = true;
                                 break;
                             }
@@ -400,19 +383,23 @@ static class Program
                 qtdeRenomeados++;
                 Console.WriteLine("Total de nomes alterados: " + qtdeRenomeados.ToString());
                 
-                if (qtdeRenomeados % 60 == 0)
+                //if (qtdeRenomeados % 60 == 0)
                 {
-                    if (workspace.TryApplyChanges(newSolution))
+              //      workspace.CloseSolution();
+                    if (workspace.TryApplyChanges(solution))
                     {
+
+
                         Console.WriteLine("Solução atualizada com sucesso.");
 
                         workspace.CloseSolution();
 
                         workspace = MSBuildWorkspace.Create();
 
-                        newSolution = await workspace.OpenSolutionAsync(solutionFileName);
+                        solution = await workspace.OpenSolutionAsync(solutionFileName);
 
                         Console.WriteLine("Solução salva e recarregada com sucesso.");
+
                     }
                     else
                     {
@@ -427,7 +414,7 @@ static class Program
         Console.WriteLine("Total de nomes alterados: " + qtdeRenomeados.ToString());
 
 
-        if (workspace.TryApplyChanges(newSolution))
+        if (workspace.TryApplyChanges(solution))
         {
 
             Console.WriteLine("Solução atualizada com sucesso.");
@@ -437,5 +424,8 @@ static class Program
         {
             Console.WriteLine("Atualização falhou!");
         }
+
+        workspace.CloseSolution();
+
     }
 }

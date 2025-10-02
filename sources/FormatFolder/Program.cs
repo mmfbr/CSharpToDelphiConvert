@@ -159,7 +159,7 @@ static class Program
         MSBuildLocator.RegisterDefaults();
         
 
-        var workDir = @"T:\Data7AdvDsv\referencia\Atual";
+        var workDir = @"T:\temp\FilterExpressions\Gold";
 
         int qtdeRenomeados = 0;
 
@@ -417,7 +417,7 @@ static class Program
                 {
                     document.TryGetText(out var text);
 
-            //        File.WriteAllText(workDir +"\\" + document.Name, text.ToString(), System.Text.Encoding.UTF8);
+                    File.WriteAllText(workDir +"\\" + document.Name, text.ToString(), System.Text.Encoding.UTF8);
                 }
             }
 
