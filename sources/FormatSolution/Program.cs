@@ -322,10 +322,17 @@ static class Program
                     foreach (ParameterSyntax parameterDeclarationSyntax in parameterSyntaxCollection)
                     {
                         
-                        if (IsKeyword(parameterDeclarationSyntax.Identifier.ValueText))
+
+
+                        if (!parameterDeclarationSyntax.Identifier.ValueText.StartsWith("A"))
                         {
-                            string newName = CreateEscapedIdentifier(parameterDeclarationSyntax.Identifier.ValueText);
                             Console.WriteLine("Renomeando Parametro: " + parameterDeclarationSyntax.Identifier.ValueText + " em: " + currentFileName);
+
+                            string newName = parameterDeclarationSyntax.Identifier.ValueText;
+                            newName = string.Concat("A", newName.Substring(0, 1).ToUpper(), newName.AsSpan(1));
+                         
+                            if (IsKeyword(parameterDeclarationSyntax.Identifier.ValueText))                           
+                                newName = CreateEscapedIdentifier(newName);
 
                             ISymbol originalSymbol = semantic.GetDeclaredSymbol(parameterDeclarationSyntax);
                             SymbolRenameOptions symbolRenameOptions = new SymbolRenameOptions(true, true, true, false);
@@ -334,7 +341,6 @@ static class Program
                             achouAlgum = true;
                             break;
                         }
-
                     }
 
                     if (achouAlgum)
