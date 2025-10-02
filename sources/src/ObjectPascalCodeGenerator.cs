@@ -169,7 +169,7 @@ namespace CSharpToObjectPascal
 			OutputIdentifier(unitName);
 			output.WriteLine(";");
 			output.WriteLine("");
-            output.WriteLine("{$INCLUDE Se7e.inc}");           
+            output.WriteLine("{$INCLUDE Seven.inc}");           
             output.WriteLine("");
 			output.WriteLine("interface");
 		}
