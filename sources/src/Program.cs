@@ -16,7 +16,7 @@ namespace CSharpToObjectPascal
         static void Main(string[] args)
         {
 
-            ConvertFilesInDirectory("T:\\LaboratorioDsv\\src\\Marcelo Melo\\CSharp\\Conversao - FilterExpressions\\renomeados", translator: false);
+            ConvertFilesInDirectory("T:\\SevenFrameworkDsv\\sources\\apoio\\WinControls\\ref", translator: false);
 
 //            ConvertFilesInDirectory("T:\\Data7AdvDsv\\TestesDotNet\\evoluir", translator: false);
 
