@@ -16,7 +16,9 @@ namespace CSharpToObjectPascal
         static void Main(string[] args)
         {
 
-            ConvertFilesInDirectory("T:\\SevenFrameworkDsv\\sources\\apoio\\WinControls\\ref", translator: false);
+            ConvertFilesInDirectory("T:\\ALDsv\\csharp-saida 2026-03-31\\System.Runtime.Serialization", translator: false);
+//            ConvertFilesInDirectory("T:\\ALDsv\\csharp-saida 2026-03-31\\Types", translator: false);
+
 
 //            ConvertFilesInDirectory("T:\\Data7AdvDsv\\TestesDotNet\\evoluir", translator: false);
 
